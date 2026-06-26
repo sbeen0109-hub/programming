@@ -11,6 +11,7 @@ void augment(int ply);
 
 int p1upg[16] = {0,};
 int p2upg[16] = {0,};
+char attack[3][200] = {"속공", "강공", "카운터"};
 
 char augmentExplain[16][2][500] = {
     {{"압도적인 힘"}, {"강공의 공격력이 1.5배가 됩니다."}},
@@ -20,7 +21,7 @@ char augmentExplain[16][2][500] = {
     {{"쾌감"}, {"상대에게 공격당할 때마다 체력을 2 회복합니다."}},
     {{"정신력"}, {"KO당할 피해를 받았을 때, 체력이 1 남습니다."}},
     {{"신속"}, {"자신이 피해를 받을 때, 12.5% 확률로 회피합니다."}},
-    {{"원 펀 치"}, {"시작 후 8턴까지 공격력이 0이 됩니다. 대신, 8턴 이후 강공의 데미지가 10배 늘어납니다."}},
+    {{"원 펀 치"}, {"시작 후 20턴까지 공격력이 0이 됩니다. 대신, 20턴 이후 강공의 데미지가 10배 늘어납니다."}},
     {{"재생력"}, {"매 턴마다 체력이 1씩 회복됩니다."}},
     {{"하이리스크"}, {"강공의 공격력이 2배가 되는 대신, 자신이 강공을 성공시킬 때마다 데미지를 5 입습니다."}},
     {{"오라오라!"}, {"속공의  기본공격력이 2가 되는 대신 속공의 공격 횟수가 3배가 됩니다."}},
@@ -219,8 +220,37 @@ void maingame()
             // 6번
             if (upg6() && p1upg[3])
             {
-                printf("패왕색 패기로 이번턴에 상대방이 행동하지 않습니다.\n");
+                printf("패왕색 패기로 이번턴에 p2가 행동하지 않습니다.\n");
                 p2_hp-=damage;
+                P1MaxHp=((((p1upg[11])?150:100)+((p1upg[8])?turns:0))>((p1upg[11])?150:100))?(((p1upg[11])?150:100)+((p1upg[8])?turns:0)):((p1upg[11])?150:100);
+                P2MaxHp=((((p2upg[11])?150:100)+((p2upg[8])?turns:0))>((p2upg[11])?150:100))?(((p2upg[11])?150:100)+((p2upg[8])?turns:0)):((p2upg[11])?150:100);
+                printf("P1 HP[");for(int i=0;i<p1_hp/2;i++)printf("\033[31m█\033[0m");for(int i=0;i<(P1MaxHp-p1_hp)/2;i++) printf("░");
+                printf("] %d / %d\n", p1_hp, P1MaxHp);
+                printf("P2 HP[");for(int i=0;i<p2_hp/2;i++)printf("\033[31m█\033[0m");for(int i=0;i<(P2MaxHp-p2_hp)/2;i++) printf("░");
+                printf("] %d / %d\n", p2_hp, P2MaxHp);
+
+                if (p1_hp <= 0){
+                    printf("P1 승!\n");
+                    break;
+                }
+                else if (p2_hp <= 0){
+                    printf("P2 승!\n");
+                    break;
+                }
+                continue;
+            }
+
+            if (upg6() && p2upg[3])
+            {
+                printf("패왕색 패기로 이번턴에 p1이 행동하지 않습니다.\n");
+                p1_hp-=damage;
+                P1MaxHp=((((p1upg[11])?150:100)+((p1upg[8])?turns:0))>((p1upg[11])?150:100))?(((p1upg[11])?150:100)+((p1upg[8])?turns:0)):((p1upg[11])?150:100);
+                P2MaxHp=((((p2upg[11])?150:100)+((p2upg[8])?turns:0))>((p2upg[11])?150:100))?(((p2upg[11])?150:100)+((p2upg[8])?turns:0)):((p2upg[11])?150:100);
+                printf("P1 HP[");for(int i=0;i<p1_hp/2;i++)printf("\033[31m█\033[0m");for(int i=0;i<(P1MaxHp-p1_hp)/2;i++) printf("░");
+                printf("] %d / %d\n", p1_hp, P1MaxHp);
+                printf("P2 HP[");for(int i=0;i<p2_hp/2;i++)printf("\033[31m█\033[0m");for(int i=0;i<(P2MaxHp-p2_hp)/2;i++) printf("░");
+                printf("] %d / %d\n", p2_hp, P2MaxHp);
+
                 if (p1_hp <= 0){
                     printf("P1 승!\n");
                     break;
@@ -355,7 +385,8 @@ void maingame()
 
                 P1MaxHp=((((p1upg[11])?150:100)+((p1upg[8])?turns:0))>((p1upg[11])?150:100))?(((p1upg[11])?150:100)+((p1upg[8])?turns:0)):((p1upg[11])?150:100);
                 P2MaxHp=((((p2upg[11])?150:100)+((p2upg[8])?turns:0))>((p2upg[11])?150:100))?(((p2upg[11])?150:100)+((p2upg[8])?turns:0)):((p2upg[11])?150:100);
-                printf("p1승 %d\n", turns);
+                printf("p1 : %s, p2 : %s\n", attack[p1 - 1], attack[p2 - 1]);
+                printf("p1승 / 현재 턴 : %d\n", turns);
                 printf("P1 HP[");for(int i=0;i<p1_hp/2;i++)printf("\033[31m█\033[0m");for(int i=0;i<(P1MaxHp-p1_hp)/2;i++) printf("░");
                 printf("] %d / %d\n", p1_hp, P1MaxHp);
                 printf("P2 HP[");for(int i=0;i<p2_hp/2;i++)printf("\033[31m█\033[0m");for(int i=0;i<(P2MaxHp-p2_hp)/2;i++) printf("░");
@@ -472,7 +503,8 @@ void maingame()
 
                 P1MaxHp=((((p1upg[11])?150:100)+((p1upg[8])?turns:0))>((p1upg[11])?150:100))?(((p1upg[11])?150:100)+((p1upg[8])?turns:0)):((p1upg[11])?150:100);
                 P2MaxHp=((((p2upg[11])?150:100)+((p2upg[8])?turns:0))>((p2upg[11])?150:100))?(((p2upg[11])?150:100)+((p2upg[8])?turns:0)):((p2upg[11])?150:100);
-                printf("p2승\n");
+                printf("p1 : %s, p2 : %s\n", attack[p1 - 1], attack[p2 - 1]);
+                printf("p2승 / 현재 턴 : %d\n", turns);
                 printf("P1 HP[");for(int i=0;i<p1_hp/2;i++)printf("\033[31m█\033[0m");for(int i=0;i<(P1MaxHp-p1_hp)/2;i++) printf("░");
                 printf("] %d / %d\n", p1_hp, P1MaxHp);
                 printf("P2 HP[");for(int i=0;i<p2_hp/2;i++)printf("\033[31m█\033[0m");for(int i=0;i<(P2MaxHp-p2_hp)/2;i++) printf("░");
@@ -495,24 +527,45 @@ void maingame()
                             if ((p1 - p2 + 3) % 3 == 2)
                             {
                                 p2_hp = 0;
+                                printf("p1 : %s, p2 : %s\n", attack[p1 - 1], attack[p2 - 1]);
+                                printf("p1 승!\n");
+                                P1MaxHp=((((p1upg[11])?150:100)+((p1upg[8])?turns:0))>((p1upg[11])?150:100))?(((p1upg[11])?150:100)+((p1upg[8])?turns:0)):((p1upg[11])?150:100);
+                                P2MaxHp=((((p2upg[11])?150:100)+((p2upg[8])?turns:0))>((p2upg[11])?150:100))?(((p2upg[11])?150:100)+((p2upg[8])?turns:0)):((p2upg[11])?150:100);
+                                printf("P1 HP[");for(int i=0;i<p1_hp/2;i++)printf("\033[31m█\033[0m");for(int i=0;i<(P1MaxHp-p1_hp)/2;i++) printf("░");
+                                printf("] %d / %d\n", p1_hp, P1MaxHp);
+                                printf("P2 HP[");for(int i=0;i<p2_hp/2;i++)printf("\033[31m█\033[0m");for(int i=0;i<(P2MaxHp-p2_hp)/2;i++) printf("░");
+                                printf("] %d / %d\n", p2_hp, P2MaxHp);
                                 break;
                             }
                             else if ((p1 - p2 + 3) % 3 == 1)
                             {
                                 p1_hp = 0;
+                                printf("p1 : %s, p2 : %s\n", attack[p1 - 1], attack[p2 - 1]);
+                                printf("p2 승!\n");
+                                P1MaxHp=((((p1upg[11])?150:100)+((p1upg[8])?turns:0))>((p1upg[11])?150:100))?(((p1upg[11])?150:100)+((p1upg[8])?turns:0)):((p1upg[11])?150:100);
+                                P2MaxHp=((((p2upg[11])?150:100)+((p2upg[8])?turns:0))>((p2upg[11])?150:100))?(((p2upg[11])?150:100)+((p2upg[8])?turns:0)):((p2upg[11])?150:100);
+                                printf("P1 HP[");for(int i=0;i<p1_hp/2;i++)printf("\033[31m█\033[0m");for(int i=0;i<(P1MaxHp-p1_hp)/2;i++) printf("░");
+                                printf("] %d / %d\n", p1_hp, P1MaxHp);
+                                printf("P2 HP[");for(int i=0;i<p2_hp/2;i++)printf("\033[31m█\033[0m");for(int i=0;i<(P2MaxHp-p2_hp)/2;i++) printf("░");
+                                printf("] %d / %d\n", p2_hp, P2MaxHp);                            
                                 break;
+                            }
+                            else
+                            {
+                                printf("무승부입니다. 사나이의 결투를 다시 진행합니다.\n");
                             }
                         }
                     }
                 }
                 else {
-                printf("무승부!\n");
-                P1MaxHp=((((p1upg[11])?150:100)+((p1upg[8])?turns:0))>((p1upg[11])?150:100))?(((p1upg[11])?150:100)+((p1upg[8])?turns:0)):((p1upg[11])?150:100);
-                P2MaxHp=((((p2upg[11])?150:100)+((p2upg[8])?turns:0))>((p2upg[11])?150:100))?(((p2upg[11])?150:100)+((p2upg[8])?turns:0)):((p2upg[11])?150:100);
-                printf("P1 HP[");for(int i=0;i<p1_hp/2;i++)printf("\033[31m█\033[0m");for(int i=0;i<(P1MaxHp-p1_hp)/2;i++) printf("░");
-                printf("] %d / %d\n", p1_hp, P1MaxHp);
-                printf("P2 HP[");for(int i=0;i<p2_hp/2;i++)printf("\033[31m█\033[0m");for(int i=0;i<(P2MaxHp-p2_hp)/2;i++) printf("░");
-                printf("] %d / %d\n", p2_hp, P2MaxHp);}
+                    printf("p1 : %s, p2 : %s\n", attack[p1 - 1], attack[p2 - 1]);
+                    printf("무승부! / 현재 턴 : %d\n", turns);
+                    P1MaxHp=((((p1upg[11])?150:100)+((p1upg[8])?turns:0))>((p1upg[11])?150:100))?(((p1upg[11])?150:100)+((p1upg[8])?turns:0)):((p1upg[11])?150:100);
+                    P2MaxHp=((((p2upg[11])?150:100)+((p2upg[8])?turns:0))>((p2upg[11])?150:100))?(((p2upg[11])?150:100)+((p2upg[8])?turns:0)):((p2upg[11])?150:100);
+                    printf("P1 HP[");for(int i=0;i<p1_hp/2;i++)printf("\033[31m█\033[0m");for(int i=0;i<(P1MaxHp-p1_hp)/2;i++) printf("░");
+                    printf("] %d / %d\n", p1_hp, P1MaxHp);
+                    printf("P2 HP[");for(int i=0;i<p2_hp/2;i++)printf("\033[31m█\033[0m");for(int i=0;i<(P2MaxHp-p2_hp)/2;i++) printf("░");
+                    printf("] %d / %d\n", p2_hp, P2MaxHp);}
             }
 
 
